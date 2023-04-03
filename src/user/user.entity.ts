@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
@@ -6,11 +7,12 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { v4 as uuid } from 'uuid';
 
 @Entity('users')
 @Unique(['email', 'phone'])
 export class UserEntity {
-  @PrimaryColumn()
+  @PrimaryColumn('uuid')
   id: string;
 
   @Column()
@@ -33,4 +35,9 @@ export class UserEntity {
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   public updated_at: Date;
+
+  @BeforeInsert()
+  generateId() {
+    this.id = uuid();
+  }
 }

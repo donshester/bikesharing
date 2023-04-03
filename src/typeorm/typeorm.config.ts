@@ -15,14 +15,18 @@ const options = (): DataSourceOptions => {
     throw new Error('Database url is empty!');
   }
   return {
-    url,
+    host: process.env.POSTGRES_HOST,
+    port: parseInt(<string>process.env.POSTGRES_PORT),
+    username: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DATABASE,
     type: 'postgres',
-    schema: 'public',
     logging: configService.get('IS_PROD') === 'false',
     entities: [BikeEntity, UserEntity],
-    migrations: [join(process.cwd(), 'migrations', '**', '*migration.ts')],
-    migrationsRun: true,
-    migrationsTableName: 'migrations',
+    // migrations: [join(process.cwd(), 'migrations', '**', '*migration.ts')],
+    // migrationsRun: true,
+    // migrationsTableName: 'migrations',
+    synchronize: true
   };
 };
 export const appDataSource = new DataSource(options());
