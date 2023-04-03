@@ -8,7 +8,7 @@ import { UserEntity } from '../user/user.entity';
 
 config({ path: join(process.cwd(), '.env') });
 const configService = new ConfigService();
-console.log(process.cwd());
+
 const options = (): DataSourceOptions => {
   const url = `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DATABASE}`;
   if (!url) {
