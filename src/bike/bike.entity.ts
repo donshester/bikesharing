@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {Column, Entity, PrimaryColumn, PrimaryGeneratedColumn} from 'typeorm';
 
 export enum BikeStatus {
   Serviceable,
@@ -6,8 +6,8 @@ export enum BikeStatus {
 }
 @Entity('bikes')
 export class BikeEntity {
-  @PrimaryColumn()
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ type: 'varchar' })
   modelName: string;

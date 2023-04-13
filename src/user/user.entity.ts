@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { v4 as uuid } from 'uuid';
+import { Roles } from './types/roles.enum';
 
 @Entity('users')
 @Unique(['email', 'phone'])
@@ -36,6 +37,8 @@ export class UserEntity {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   public updated_at: Date;
 
+  @Column({ type: 'enum', enum: Roles, default: Roles.User })
+  public role: Roles;
   @BeforeInsert()
   generateId() {
     this.id = uuid();

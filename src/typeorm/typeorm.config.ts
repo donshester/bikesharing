@@ -26,7 +26,7 @@ const options = (): DataSourceOptions => {
     // migrations: [join(process.cwd(), 'migrations', '**', '*migration.ts')],
     // migrationsRun: true,
     // migrationsTableName: 'migrations',
-    synchronize: true
+    synchronize: true,
   };
 };
 export const appDataSource = new DataSource(options());

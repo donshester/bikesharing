@@ -1,3 +1,6 @@
-import {UserEntity} from "../user.entity";
+import { UserEntity } from '../user.entity';
 
-export type GetUserDto = Omit<UserEntity, 'hashedPassword'| 'id'>
+export type GetUserDto = Omit<
+  UserEntity,
+  'hashedPassword' | 'id' | 'generateId'
+>;
