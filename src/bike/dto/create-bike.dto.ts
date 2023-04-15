@@ -7,6 +7,8 @@ export class CreateBikeDto {
 
   readonly isAvailable: boolean;
 
+  readonly hourlyPrice: number;
+
   readonly longitude: number;
 
   readonly latitude: number;

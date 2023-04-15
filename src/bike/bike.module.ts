@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { BikeController } from './bike.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BikeEntity } from './bike.entity';
-import {BikeService} from "./bike.service";
+import { BikeService } from './bike.service';
 
 @Module({
   providers: [BikeService],

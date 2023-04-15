@@ -1,8 +1,10 @@
 import {Body, Controller, Get, Param, Post, Put} from '@nestjs/common';
-import { BikeService } from './bike.service';
-import { UpdateBikeDto } from './dto/update-bike.dto';
-import { GetBikeDto } from './dto/get-bike.dto';
-import { CreateBikeDto } from './dto/create-bike.dto';
+import {BikeService} from './bike.service';
+import {UpdateBikeDto} from './dto/update-bike.dto';
+import {GetBikeDto} from './dto/get-bike.dto';
+import {CreateBikeDto} from './dto/create-bike.dto';
+import {BikeEntity} from "./bike.entity";
+import {UpdateLocationDto} from "./dto/update-location.dto";
 
 @Controller('bike')
 export class BikeController {
@@ -18,8 +20,8 @@ export class BikeController {
     @Param('id') id: number,
     @Body() updateBikeDto: UpdateBikeDto,
   ): Promise<GetBikeDto> {
-      console.log(updateBikeDto);
-      return this.bikeService.update(id, updateBikeDto);
+    console.log(updateBikeDto);
+    return this.bikeService.update(id, updateBikeDto);
   }
 
   @Get('available')
@@ -31,4 +33,12 @@ export class BikeController {
   async create(@Body() createBikeDto: CreateBikeDto) {
     return this.bikeService.createBike(createBikeDto);
   }
+  @Put('/:id/location')
+  async updateBikeLocation(
+      @Param('id') bikeId: number,
+      @Body() updateBikeLocationDto: UpdateLocationDto,
+  ): Promise<BikeEntity> {
+    return await this.bikeService.updateBikeLocation(bikeId,updateBikeLocationDto );
+  }
+
 }

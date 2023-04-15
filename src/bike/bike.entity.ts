@@ -1,8 +1,15 @@
-import {Column, Entity, PrimaryColumn, PrimaryGeneratedColumn} from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { DriveEntity } from '../drive/drive.entity';
 
 export enum BikeStatus {
-  Serviceable,
-  OutOfOrder,
+  Serviceable = "Serviceable",
+  OutOfOrder =  "OutOfOrder",
 }
 @Entity('bikes')
 export class BikeEntity {
@@ -11,6 +18,9 @@ export class BikeEntity {
 
   @Column({ type: 'varchar' })
   modelName: string;
+
+  @Column({type: 'float'})
+  hourlyPrice: number;
 
   @Column({ type: 'varchar' })
   description: string;
@@ -26,4 +36,7 @@ export class BikeEntity {
 
   @Column({ type: 'enum', enum: BikeStatus, default: BikeStatus.Serviceable })
   status: BikeStatus;
+
+  @OneToMany(() => DriveEntity, (drive) => drive.bike)
+  drives: DriveEntity[];
 }

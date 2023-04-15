@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordService } from './password.service';
 import { UserService } from './user.service';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity])],
   providers: [PasswordService, UserService],

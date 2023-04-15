@@ -3,12 +3,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryColumn,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Roles } from './types/roles.enum';
+import { DriveEntity } from '../drive/drive.entity';
+import {Exclude} from "class-transformer";
 
 @Entity('users')
 @Unique(['email', 'phone'])
@@ -20,6 +23,7 @@ export class UserEntity {
   email: string;
 
   @Column()
+  @Exclude()
   hashedPassword: string;
 
   @Column()
@@ -39,6 +43,9 @@ export class UserEntity {
 
   @Column({ type: 'enum', enum: Roles, default: Roles.User })
   public role: Roles;
+
+  @OneToMany(() => DriveEntity, (drive) => drive.user)
+  drives: DriveEntity[];
   @BeforeInsert()
   generateId() {
     this.id = uuid();

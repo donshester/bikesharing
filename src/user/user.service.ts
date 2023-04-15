@@ -54,6 +54,6 @@ export class UserService {
 
   async getAllUsers(): Promise<GetUserDto[]> {
     const users: UserEntity[] = await this.userRepository.find();
-    return users.map(({ id, hashedPassword, ...user }) => user);
+    return users.map(({ hashedPassword, ...user }) => user);
   }
 }
