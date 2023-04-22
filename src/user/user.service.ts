@@ -1,11 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PasswordService } from './password.service';
-import { GetUserDto } from './dto/get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { sign } from 'jsonwebtoken';
+import * as process from 'process';
+import { UserResponseInterface } from './types/userResponse.interface';
+import {LoginUserDto} from "./dto/login-user.dto";
 
 @Injectable()
 export class UserService {
@@ -26,14 +29,12 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async getUser(id: string): Promise<GetUserDto> {
+  async getUser(id: string): Promise<UserResponseInterface> {
     const userResponse = await this.userRepository.findOneBy({ id: id });
     if (!userResponse) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    delete userResponse.id;
-    delete userResponse.hashedPassword;
-    return userResponse;
+    return this.buildUserResponse(userResponse);
   }
 
   async updateUser(
@@ -52,8 +53,40 @@ export class UserService {
     await this.userRepository.remove(user);
   }
 
-  async getAllUsers(): Promise<GetUserDto[]> {
-    const users: UserEntity[] = await this.userRepository.find();
-    return users.map(({ hashedPassword, ...user }) => user);
+  async getAllUsers(): Promise<UserEntity[]> {
+    return await this.userRepository.find();
+  }
+
+  async login(loginUserDto: LoginUserDto):Promise<UserEntity>{
+    const errorResponse = {
+      errors: {
+        'email or password': 'is invalid',
+      },
+    };
+    const user =await this.userRepository.findOne({where:{
+        email: loginUserDto.email
+      }})
+    if(!user){
+      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    const isPasswordCorrect = await this.passwordService.comparePassword(loginUserDto.password, user.hashedPassword);
+
+    if (!isPasswordCorrect) {
+      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    return user;
+  }
+  private generateJwt(user: UserEntity): string {
+    return sign(
+      {
+        id: user.id,
+        email: user.email,
+        telephone: user.phone,
+      },
+      process.env.SECRET_KEY,
+    );
+  }
+  buildUserResponse(userEntity: UserEntity): UserResponseInterface {
+    return { ...userEntity, token: this.generateJwt(userEntity) };
   }
 }

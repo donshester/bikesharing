@@ -5,7 +5,7 @@ import * as process from 'process';
 import { join } from 'path';
 import { BikeEntity } from '../bike/bike.entity';
 import { UserEntity } from '../user/user.entity';
-import {DriveEntity} from "../drive/drive.entity";
+import { DriveEntity } from '../drive/drive.entity';
 
 config({ path: join(process.cwd(), '.env') });
 const configService = new ConfigService();
@@ -23,11 +23,8 @@ const options = (): DataSourceOptions => {
     database: process.env.POSTGRES_DATABASE,
     type: 'postgres',
     logging: configService.get('IS_PROD') === 'false',
-    entities: [BikeEntity, UserEntity, DriveEntity],
-    // migrations: [join(process.cwd(), 'migrations', '**', '*migration.ts')],
-    // migrationsRun: true,
-    // migrationsTableName: 'migrations',
-    synchronize: true,
+    entities: [join(__dirname, '**', '*.entity{.ts,.js}')],
+    migrations: ['dist/migrations/*.{ts,js}'],
   };
 };
 export const appDataSource = new DataSource(options());

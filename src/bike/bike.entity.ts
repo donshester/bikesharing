@@ -8,8 +8,8 @@ import {
 import { DriveEntity } from '../drive/drive.entity';
 
 export enum BikeStatus {
-  Serviceable = "Serviceable",
-  OutOfOrder =  "OutOfOrder",
+  Serviceable = 'Serviceable',
+  OutOfOrder = 'OutOfOrder',
 }
 @Entity('bikes')
 export class BikeEntity {
@@ -19,7 +19,7 @@ export class BikeEntity {
   @Column({ type: 'varchar' })
   modelName: string;
 
-  @Column({type: 'float'})
+  @Column({ type: 'float' })
   hourlyPrice: number;
 
   @Column({ type: 'varchar' })

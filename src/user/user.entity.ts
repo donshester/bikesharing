@@ -11,7 +11,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Roles } from './types/roles.enum';
 import { DriveEntity } from '../drive/drive.entity';
-import {Exclude} from "class-transformer";
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 @Unique(['email', 'phone'])
