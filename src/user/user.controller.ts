@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
   Param,
   Post,
   Put,
@@ -14,7 +13,9 @@ import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseInterface } from './types/userResponse.interface';
-import {LoginUserDto} from "./dto/login-user.dto";
+import { LoginUserDto } from './dto/login-user.dto';
+import { User } from './decorators/user.decorator';
+import { UserGuard } from './guards/user.guard';
 
 @Controller('user')
 export class UserController {
@@ -32,16 +33,22 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
-  @Get('users')
-  async getUsers(): Promise<UserEntity[]> {
-    return await this.userService.getAllUsers();
+  // @Get('users')
+  // async getUsers(): Promise<UserEntity[]> {
+  //   return await this.userService.getAllUsers();
+  // }
+  @Get('current')
+  @UseGuards(UserGuard)
+  async getCurrentUser(@User() user: UserEntity) {
+    return this.userService.buildUserResponse(user);
   }
-
   @Get(':id')
   async getUser(@Param('id') id: string): Promise<UserResponseInterface> {
     return await this.userService.getUser(id);
   }
+
   @Put(':id')
+  @UseGuards(UserGuard)
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -50,9 +57,8 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
-
-
   @Delete(':id')
+  @UseGuards(UserGuard)
   async deleteUser(@Param('id') id: string): Promise<void> {
     return await this.userService.deleteUser(id);
   }

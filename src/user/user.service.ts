@@ -1,4 +1,9 @@
-import {HttpException, HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
@@ -8,7 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { sign } from 'jsonwebtoken';
 import * as process from 'process';
 import { UserResponseInterface } from './types/userResponse.interface';
-import {LoginUserDto} from "./dto/login-user.dto";
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UserService {
@@ -57,19 +62,24 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  async login(loginUserDto: LoginUserDto):Promise<UserEntity>{
+  async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
     const errorResponse = {
       errors: {
         'email or password': 'is invalid',
       },
     };
-    const user =await this.userRepository.findOne({where:{
-        email: loginUserDto.email
-      }})
-    if(!user){
+    const user = await this.userRepository.findOne({
+      where: {
+        email: loginUserDto.email,
+      },
+    });
+    if (!user) {
       throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
-    const isPasswordCorrect = await this.passwordService.comparePassword(loginUserDto.password, user.hashedPassword);
+    const isPasswordCorrect = await this.passwordService.comparePassword(
+      loginUserDto.password,
+      user.hashedPassword,
+    );
 
     if (!isPasswordCorrect) {
       throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -88,5 +98,8 @@ export class UserService {
   }
   buildUserResponse(userEntity: UserEntity): UserResponseInterface {
     return { ...userEntity, token: this.generateJwt(userEntity) };
+  }
+  async findById(id: string): Promise<UserEntity> {
+    return this.userRepository.findOneBy({ id: id });
   }
 }

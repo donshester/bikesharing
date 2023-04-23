@@ -3,9 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
 import * as process from 'process';
 import { join } from 'path';
-import { BikeEntity } from '../bike/bike.entity';
-import { UserEntity } from '../user/user.entity';
-import { DriveEntity } from '../drive/drive.entity';
 
 config({ path: join(process.cwd(), '.env') });
 const configService = new ConfigService();

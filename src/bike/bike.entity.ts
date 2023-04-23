@@ -2,7 +2,6 @@ import {
   Column,
   Entity,
   OneToMany,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DriveEntity } from '../drive/drive.entity';
