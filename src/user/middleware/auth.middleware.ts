@@ -21,7 +21,6 @@ export class AuthMiddleware implements NestMiddleware {
     try {
       const decode = verify(token, process.env.SECRET_KEY) as JwtPayload;
       req.user = await this.userService.findById(decode.id);
-      console.log(decode);
       next();
     } catch (err) {
       req.user = null;

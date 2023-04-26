@@ -19,6 +19,6 @@ export class DriveEntity {
   @Column({ nullable: true })
   endTime: Date;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   cost: number;
 }

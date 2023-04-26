@@ -5,6 +5,7 @@ import { CreateBikeDto } from './dto/create-bike.dto';
 import { Repository } from 'typeorm';
 import { UpdateBikeDto } from './dto/update-bike.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
+import { BikeResponse } from './types/bike-response.type';
 
 @Injectable()
 export class BikeService {
@@ -22,8 +23,17 @@ export class BikeService {
     return this.bikeRepository.find();
   }
 
-  async getAllAvailable(): Promise<BikeEntity[]> {
-    return this.bikeRepository.find({
+  async getBikeInfo(id: number): Promise<BikeEntity[]> {
+    return await this.bikeRepository.find({
+      where: { id: id },
+      relations: { drives: true },
+    });
+  }
+  async getAllAvailable(): Promise<BikeResponse[]> {
+    return await this.bikeRepository.find({
+      select: {
+        status: false,
+      },
       where: {
         status: BikeStatus.Serviceable,
         isAvailable: true,

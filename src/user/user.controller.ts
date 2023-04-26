@@ -16,6 +16,9 @@ import { UserResponseInterface } from './types/userResponse.interface';
 import { LoginUserDto } from './dto/login-user.dto';
 import { User } from './decorators/user.decorator';
 import { UserGuard } from './guards/user.guard';
+import { Role } from './decorators/role.decorator';
+import { Roles } from './types/roles.enum';
+import { DriveEntity } from '../drive/drive.entity';
 
 @Controller('user')
 export class UserController {
@@ -33,32 +36,46 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
-  // @Get('users')
-  // async getUsers(): Promise<UserEntity[]> {
-  //   return await this.userService.getAllUsers();
-  // }
   @Get('current')
   @UseGuards(UserGuard)
   async getCurrentUser(@User() user: UserEntity) {
     return this.userService.buildUserResponse(user);
   }
+
+  @Get('current/drives')
+  async getCurrentUserDrives(@User('id') id: string): Promise<DriveEntity[]> {
+    return this.userService.getUserDrives(id);
+  }
   @Get(':id')
+  @Role(Roles.Admin)
+  @UseGuards(UserGuard)
   async getUser(@Param('id') id: string): Promise<UserResponseInterface> {
     return await this.userService.getUser(id);
   }
 
-  @Put(':id')
+  @Put('user')
   @UseGuards(UserGuard)
   async updateUser(
-    @Param('id') id: string,
+    @User('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserResponseInterface> {
     const user = await this.userService.updateUser(id, updateUserDto);
     return this.userService.buildUserResponse(user);
   }
+  @Put(':id/role')
+  @UseGuards(UserGuard)
+  @Role(Roles.Admin)
+  async updateRole(
+    @Param('id') userId: string,
+    @Body('role') role: Roles,
+  ): Promise<UserResponseInterface> {
+    const user = await this.userService.updateRole(userId, role);
+    return this.userService.buildUserResponse(user);
+  }
 
   @Delete(':id')
   @UseGuards(UserGuard)
+  @Role(Roles.Admin)
   async deleteUser(@Param('id') id: string): Promise<void> {
     return await this.userService.deleteUser(id);
   }

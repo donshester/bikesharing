@@ -14,6 +14,8 @@ import { sign } from 'jsonwebtoken';
 import * as process from 'process';
 import { UserResponseInterface } from './types/userResponse.interface';
 import { LoginUserDto } from './dto/login-user.dto';
+import { DriveEntity } from '../drive/drive.entity';
+import { Roles } from './types/roles.enum';
 
 @Injectable()
 export class UserService {
@@ -97,9 +99,26 @@ export class UserService {
     );
   }
   buildUserResponse(userEntity: UserEntity): UserResponseInterface {
-    return { ...userEntity, token: this.generateJwt(userEntity) };
+    const { hashedPassword, ...userWithoutPassword } = userEntity;
+    return { ...userWithoutPassword, token: this.generateJwt(userEntity) };
   }
   async findById(id: string): Promise<UserEntity> {
-    return this.userRepository.findOneBy({ id: id });
+    return await this.userRepository.findOneBy({ id: id });
+  }
+  async getUserDrives(userId: string): Promise<DriveEntity[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: { drives: true },
+    });
+    return user.drives;
+  }
+
+  async updateRole(userId: string, role: Roles): Promise<UserEntity> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.role = role;
+    return await this.userRepository.save(user);
   }
 }
