@@ -1,3 +1,13 @@
-import { BikeEntity } from '../bike.entity';
+import { BikeStatus } from '../bike.entity';
 
-export type UpdateBikeDto = Omit<BikeEntity, 'id' | 'longitude' | 'latitude'>;
+export class UpdateBikeDto {
+  modelName: string;
+
+  hourlyPrice: number;
+
+  description: string;
+
+  isAvailable: boolean;
+
+  status: BikeStatus;
+}

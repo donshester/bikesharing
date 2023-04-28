@@ -3,20 +3,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BikeEntity, BikeStatus } from './bike.entity';
 import { CreateBikeDto } from './dto/create-bike.dto';
 import { Repository } from 'typeorm';
-import { UpdateBikeDto } from './dto/update-bike.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { BikeResponse } from './types/bike-response.type';
+import { AuthService } from './auth.service';
+import { BikeUserResponse } from './types/bike-user-response.type';
+import { UpdateBikeDto } from './dto/update-bike.dto';
 
 @Injectable()
 export class BikeService {
   constructor(
     @InjectRepository(BikeEntity)
     private readonly bikeRepository: Repository<BikeEntity>,
+    private readonly authService: AuthService,
   ) {}
 
-  async createBike(createBikeDto: CreateBikeDto): Promise<BikeEntity> {
+  async createBike(createBikeDto: CreateBikeDto): Promise<BikeResponse> {
     const bike: BikeEntity = await this.bikeRepository.create(createBikeDto);
-    return await this.bikeRepository.save(bike);
+    const token = this.authService.generateToken(bike);
+    await this.bikeRepository.save(bike);
+    return { ...bike, token };
   }
 
   async getAll(): Promise<BikeEntity[]> {
@@ -29,10 +34,11 @@ export class BikeService {
       relations: { drives: true },
     });
   }
-  async getAllAvailable(): Promise<BikeResponse[]> {
+  async getAllAvailable(): Promise<BikeEntity[]> {
     return await this.bikeRepository.find({
       select: {
         status: false,
+        isAvailable: false,
       },
       where: {
         status: BikeStatus.Serviceable,
@@ -40,22 +46,42 @@ export class BikeService {
       },
     });
   }
-  async update(id: number, updateBikeDto: UpdateBikeDto) {
+  async update(
+    id: number,
+    updateBikeDto: UpdateBikeDto,
+  ): Promise<BikeUserResponse> {
     const bike: BikeEntity = await this.bikeRepository.findOneBy({ id: id });
     Object.assign(bike, updateBikeDto);
-    return await this.bikeRepository.save(bike);
+    await this.bikeRepository.save(bike);
+    delete bike.isAvailable;
+    delete bike.status;
+    return bike;
   }
 
   async updateBikeLocation(
-    bikeId: number,
-    updateLocationDto: UpdateLocationDto,
-  ): Promise<BikeEntity> {
-    const bike = await this.bikeRepository.findOneBy({ id: bikeId });
-    if (!bike) {
-      throw new NotFoundException('Bike not found');
+    id: number,
+    updateBikeDto: UpdateLocationDto,
+  ): Promise<BikeResponse> {
+    const updatedBike = await this.bikeRepository.preload({
+      id,
+      ...updateBikeDto,
+    });
+
+    if (!updatedBike) {
+      throw new NotFoundException(`Bike with id ${id} not found`);
     }
 
-    Object.assign(bike, updateLocationDto);
-    return await this.bikeRepository.save(bike);
+    await this.bikeRepository.save(updatedBike);
+
+    const token = this.authService.generateToken(updatedBike);
+    return { ...updatedBike, token };
+  }
+
+  async findById(id: number): Promise<BikeEntity> {
+    const bike = this.bikeRepository.findOneBy({ id: id });
+    if (!bike) {
+      throw new NotFoundException('Bike not found!');
+    }
+    return bike;
   }
 }
