@@ -1,6 +1,4 @@
-# BSUIR
-
-### Coursework: Bike sharing
+### Bike sharing
 
 ## Features
 - User can rent bikes.
