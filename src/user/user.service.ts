@@ -49,7 +49,16 @@ export class UserService {
     updateUserDto: UpdateUserDto,
   ): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id: id });
-    return await this.userRepository.save({ ...user, ...updateUserDto });
+    if (updateUserDto.password) {
+      user.hashedPassword = await this.passwordService.hashPassword(
+        updateUserDto.password,
+      );
+    }
+    return await this.userRepository.save({
+      ...user,
+      ...updateUserDto,
+      updated_at: new Date(),
+    });
   }
 
   async deleteUser(id: string): Promise<void> {

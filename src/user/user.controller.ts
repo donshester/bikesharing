@@ -57,7 +57,7 @@ export class UserController {
     return await this.userService.getUser(id);
   }
 
-  @Put('user')
+  @Put('update')
   @UseGuards(UserGuard)
   @UsePipes(new ValidationPipe())
   async updateUser(
