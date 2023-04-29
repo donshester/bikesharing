@@ -1,5 +1,4 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { ExpressRequest } from '../../../types/expressRequest.interface';
 import * as jwt from 'jsonwebtoken';
 import * as process from 'process';
 @Injectable()

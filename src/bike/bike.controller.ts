@@ -3,10 +3,13 @@ import {
   Controller,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Req,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { BikeService } from './bike.service';
 import { UpdateBikeDto } from './dto/update-bike.dto';
@@ -19,7 +22,6 @@ import { UserGuard } from '../user/guards/user.guard';
 import { BikeResponse } from './types/bike-response.type';
 import { BikeUserResponse } from './types/bike-user-response.type';
 import { BikeGuard } from './guards/bike.guard';
-import { request } from 'express';
 
 @Controller('bike')
 export class BikeController {
@@ -33,11 +35,11 @@ export class BikeController {
   }
   @Put('/location')
   @UseGuards(BikeGuard)
+  @UsePipes(new ValidationPipe())
   async updateBikeLocation(
     @Body() updateBikeLocationDto: UpdateLocationDto,
     @Req() req,
   ): Promise<BikeResponse> {
-    console.log(req.bikeId);
     const bike = await this.bikeService.findById(req.bikeId);
     return await this.bikeService.updateBikeLocation(
       bike.id,
@@ -47,8 +49,9 @@ export class BikeController {
   @Put(':id')
   @Role(Roles.Admin)
   @UseGuards(UserGuard)
+  @UsePipes(new ValidationPipe())
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateBikeDto: UpdateBikeDto,
   ): Promise<BikeUserResponse> {
     return this.bikeService.update(id, updateBikeDto);
@@ -57,7 +60,9 @@ export class BikeController {
   @Get('info/:id')
   @Role(Roles.Admin)
   @UseGuards(UserGuard)
-  async getBikeInfo(@Param('id') id: number): Promise<BikeEntity[]> {
+  async getBikeInfo(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<BikeEntity[]> {
     return this.bikeService.getBikeInfo(id);
   }
   @Get('available')
@@ -69,6 +74,7 @@ export class BikeController {
   @Post('create')
   @Role(Roles.Admin)
   @UseGuards(UserGuard)
+  @UsePipes(new ValidationPipe())
   async create(@Body() createBikeDto: CreateBikeDto) {
     return this.bikeService.createBike(createBikeDto);
   }

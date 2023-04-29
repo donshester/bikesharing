@@ -7,6 +7,8 @@ import {
   Post,
   Put,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './user.entity';
@@ -25,12 +27,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('login')
+  @UsePipes(new ValidationPipe())
   async login(@Body() loginDto: LoginUserDto): Promise<UserResponseInterface> {
     const user = await this.userService.login(loginDto);
     return this.userService.buildUserResponse(user);
   }
 
   @Post('/create')
+  @UsePipes(new ValidationPipe())
   async create(@Body() dto: CreateUserDto) {
     const user = await this.userService.createUser(dto);
     return this.userService.buildUserResponse(user);
@@ -55,6 +59,7 @@ export class UserController {
 
   @Put('user')
   @UseGuards(UserGuard)
+  @UsePipes(new ValidationPipe())
   async updateUser(
     @User('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -65,6 +70,7 @@ export class UserController {
   @Put(':id/role')
   @UseGuards(UserGuard)
   @Role(Roles.Admin)
+  @UsePipes(new ValidationPipe())
   async updateRole(
     @Param('id') userId: string,
     @Body('role') role: Roles,

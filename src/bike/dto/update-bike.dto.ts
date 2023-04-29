@@ -1,13 +1,19 @@
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { BikeStatus } from '../bike.entity';
 
 export class UpdateBikeDto {
-  modelName: string;
+  @IsString()
+  modelName?: string;
 
-  hourlyPrice: number;
+  @IsNumber()
+  hourlyPrice?: number;
 
-  description: string;
+  @IsString()
+  description?: string;
 
-  isAvailable: boolean;
+  @IsBoolean()
+  isAvailable?: boolean;
 
-  status: BikeStatus;
+  @IsNotEmpty()
+  status?: BikeStatus;
 }
