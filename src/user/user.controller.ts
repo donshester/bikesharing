@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Post,
-  Put,
+  Put, Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -54,7 +54,8 @@ export class UserController {
   @Role(Roles.Admin)
   @UseGuards(UserGuard)
   async getUser(@Param('id') id: string): Promise<UserResponseInterface> {
-    return await this.userService.getUser(id);
+    const user =  await this.userService.getUser(id);
+    return this.userService.buildUserResponse(user);
   }
 
   @Put('update')
@@ -84,5 +85,12 @@ export class UserController {
   @Role(Roles.Admin)
   async deleteUser(@Param('id') id: string): Promise<void> {
     return await this.userService.deleteUser(id);
+  }
+
+  @Get('users')
+  @UseGuards(UserGuard)
+  @Role(Roles.Admin)
+  async findByQuery(@Query('query') query: string):Promise<UserEntity[]> {
+    return await this.userService.findByQuery(query);
   }
 }

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
-import { Repository } from 'typeorm';
+import {ILike, Repository} from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PasswordService } from './password.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -36,12 +36,12 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async getUser(id: string): Promise<UserResponseInterface> {
-    const userResponse = await this.userRepository.findOneBy({ id: id });
-    if (!userResponse) {
+  async getUser(id: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOneBy({ id: id });
+    if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return this.buildUserResponse(userResponse);
+    return user;
   }
 
   async updateUser(
@@ -129,5 +129,21 @@ export class UserService {
     }
     user.role = role;
     return await this.userRepository.save(user);
+  }
+  async findByQuery(query: string): Promise<UserEntity[]> {
+    return this.userRepository
+        .createQueryBuilder('user')
+        .select([
+          'user.id',
+          'user.email',
+          'user.firstName',
+          'user.secondName',
+          'user.phone',
+          'user.created_at',
+          'user.updated_at',
+          'user.role',
+        ])
+        .where('user.firstName LIKE :query OR user.lastName LIKE :query', { query: `%${query}%` })
+        .getMany();
   }
 }
