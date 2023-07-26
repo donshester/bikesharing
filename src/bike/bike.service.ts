@@ -34,7 +34,7 @@ export class BikeService {
       relations: { drives: true },
     });
   }
-  async getAllAvailable(): Promise<BikeEntity[]> {
+  async getAllAvailable() {
     return await this.bikeRepository.find({
       select: {
         status: false,

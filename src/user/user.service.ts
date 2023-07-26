@@ -1,12 +1,13 @@
 import {
+  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+  NotFoundException, UnprocessableEntityException
+} from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
-import {ILike, Repository} from 'typeorm';
+import { FindOneOptions, ILike, Repository } from "typeorm";
 import { CreateUserDto } from './dto/create-user.dto';
 import { PasswordService } from './password.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -26,6 +27,14 @@ export class UserService {
   ) {}
 
   async createUser(userDto: CreateUserDto): Promise<UserEntity> {
+    const existingUser = await this.userRepository.findOne({
+      where: [{ email: userDto.email }, { phone: userDto.phone }],
+      operator: 'or',
+    } as FindOneOptions<UserEntity>);
+
+    if (existingUser) {
+      throw new ConflictException('Email or phone already exists');
+    }
     const hashedPassword = await this.passwordService.hashPassword(
       userDto.password,
     );
@@ -74,18 +83,14 @@ export class UserService {
   }
 
   async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
-    const errorResponse = {
-      errors: {
-        'email or password': 'is invalid',
-      },
-    };
+
     const user = await this.userRepository.findOne({
       where: {
         email: loginUserDto.email,
       },
     });
     if (!user) {
-      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new UnprocessableEntityException('email or password are incorrect');
     }
     const isPasswordCorrect = await this.passwordService.comparePassword(
       loginUserDto.password,
@@ -93,7 +98,7 @@ export class UserService {
     );
 
     if (!isPasswordCorrect) {
-      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new UnprocessableEntityException('email or password are incorrect');
     }
     return user;
   }
@@ -132,18 +137,21 @@ export class UserService {
   }
   async findByQuery(query: string): Promise<UserEntity[]> {
     return this.userRepository
-        .createQueryBuilder('user')
-        .select([
-          'user.id',
-          'user.email',
-          'user.firstName',
-          'user.secondName',
-          'user.phone',
-          'user.created_at',
-          'user.updated_at',
-          'user.role',
-        ])
-        .where('user.firstName LIKE :query OR user.lastName LIKE :query', { query: `%${query}%` })
-        .getMany();
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.firstName',
+        'user.secondName',
+        'user.phone',
+        'user.created_at',
+        'user.updated_at',
+        'user.role',
+      ])
+      .where('user.firstName ILIKE :query OR user.secondName ILIKE :query', {
+        query: `%${query}%`,
+      })
+      .getMany();
+
   }
 }

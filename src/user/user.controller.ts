@@ -5,7 +5,8 @@ import {
   Get,
   Param,
   Post,
-  Put, Query,
+  Put,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -45,7 +46,12 @@ export class UserController {
   async getCurrentUser(@User() user: UserEntity) {
     return this.userService.buildUserResponse(user);
   }
-
+  @Get('search/users')
+  @UseGuards(UserGuard)
+  @Role(Roles.Admin)
+  async findByQuery(@Query('query') query: string): Promise<UserEntity[]> {
+    return await this.userService.findByQuery(query);
+  }
   @Get('current/drives')
   async getCurrentUserDrives(@User('id') id: string): Promise<DriveEntity[]> {
     return this.userService.getUserDrives(id);
@@ -54,7 +60,7 @@ export class UserController {
   @Role(Roles.Admin)
   @UseGuards(UserGuard)
   async getUser(@Param('id') id: string): Promise<UserResponseInterface> {
-    const user =  await this.userService.getUser(id);
+    const user = await this.userService.getUser(id);
     return this.userService.buildUserResponse(user);
   }
 
@@ -87,10 +93,5 @@ export class UserController {
     return await this.userService.deleteUser(id);
   }
 
-  @Get('users')
-  @UseGuards(UserGuard)
-  @Role(Roles.Admin)
-  async findByQuery(@Query('query') query: string):Promise<UserEntity[]> {
-    return await this.userService.findByQuery(query);
-  }
+
 }
