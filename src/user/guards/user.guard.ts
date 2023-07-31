@@ -17,7 +17,7 @@ export class UserGuard implements CanActivate {
       context.getHandler(),
     );
     const request = context.switchToHttp().getRequest<ExpressRequest>();
-
+``
     if (!requiredRole && request.user) {
       return true;
     }

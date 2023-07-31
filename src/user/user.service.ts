@@ -1,13 +1,12 @@
 import {
   ConflictException,
-  HttpException,
-  HttpStatus,
   Injectable,
-  NotFoundException, UnprocessableEntityException
-} from "@nestjs/common";
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
-import { FindOneOptions, ILike, Repository } from "typeorm";
+import { FindOneOptions, ILike, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PasswordService } from './password.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -42,7 +41,7 @@ export class UserService {
       ...userDto,
       hashedPassword,
     });
-    return this.userRepository.save(user);
+    return await this.userRepository.save(user);
   }
 
   async getUser(id: string): Promise<UserEntity> {
@@ -83,7 +82,6 @@ export class UserService {
   }
 
   async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
-
     const user = await this.userRepository.findOne({
       where: {
         email: loginUserDto.email,
@@ -116,22 +114,28 @@ export class UserService {
     const { hashedPassword, ...userWithoutPassword } = userEntity;
     return { ...userWithoutPassword, token: this.generateJwt(userEntity) };
   }
-  async findById(id: string): Promise<UserEntity> {
-    return await this.userRepository.findOneBy({ id: id });
+  async findById(id: string): Promise<UserEntity | null> {
+    const user = await this.userRepository.findOneBy({ id: id });
+    return user || null;
   }
   async getUserDrives(userId: string): Promise<DriveEntity[]> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: { drives: true },
     });
+    if (!user || !user.drives) {
+      return [];
+    }
+
     return user.drives;
   }
 
   async updateRole(userId: string, role: Roles): Promise<UserEntity> {
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    const user = await this.userRepository.findOneOrFail({
+      where: {
+        id: userId,
+      },
+    });
     user.role = role;
     return await this.userRepository.save(user);
   }
@@ -152,6 +156,5 @@ export class UserService {
         query: `%${query}%`,
       })
       .getMany();
-
   }
 }
