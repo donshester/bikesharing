@@ -3,14 +3,14 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
+  Param, ParseUUIDPipe,
   Post,
   Put,
   Query,
   UseGuards,
   UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+  ValidationPipe
+} from "@nestjs/common";
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
@@ -22,7 +22,6 @@ import { UserGuard } from './guards/user.guard';
 import { Role } from './decorators/role.decorator';
 import { Roles } from './types/roles.enum';
 import { DriveEntity } from '../drive/drive.entity';
-
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -53,13 +52,16 @@ export class UserController {
     return await this.userService.findByQuery(query);
   }
   @Get('current/drives')
+  @UseGuards(UserGuard)
   async getCurrentUserDrives(@User('id') id: string): Promise<DriveEntity[]> {
     return this.userService.getUserDrives(id);
   }
   @Get(':id')
   @Role(Roles.Admin)
   @UseGuards(UserGuard)
-  async getUser(@Param('id') id: string): Promise<UserResponseInterface> {
+  async getUser(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<UserResponseInterface> {
     const user = await this.userService.getUser(id);
     return this.userService.buildUserResponse(user);
   }
@@ -79,7 +81,7 @@ export class UserController {
   @Role(Roles.Admin)
   @UsePipes(new ValidationPipe())
   async updateRole(
-    @Param('id') userId: string,
+    @Param('id', ParseUUIDPipe) userId: string,
     @Body('role') role: Roles,
   ): Promise<UserResponseInterface> {
     const user = await this.userService.updateRole(userId, role);
@@ -92,6 +94,4 @@ export class UserController {
   async deleteUser(@Param('id') id: string): Promise<void> {
     return await this.userService.deleteUser(id);
   }
-
-
 }

@@ -22,6 +22,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+
     private readonly passwordService: PasswordService,
   ) {}
 
@@ -100,7 +101,7 @@ export class UserService {
     }
     return user;
   }
-  private generateJwt(user: UserEntity): string {
+  public generateJwt(user: UserEntity): string {
     return sign(
       {
         id: user.id,
@@ -126,7 +127,6 @@ export class UserService {
     if (!user || !user.drives) {
       return [];
     }
-
     return user.drives;
   }
 

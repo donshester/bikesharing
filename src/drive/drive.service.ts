@@ -41,7 +41,7 @@ export class DriveService {
     bike.isAvailable = false;
     delete drive.user.hashedPassword;
     await this.bikeRepository.save(bike);
-    return await this.driveRepository.save(drive);
+    return this.driveRepository.save(drive);
   }
   async endDrive(driveId: number, user: UserEntity): Promise<DriveEntity> {
     const drive = await this.driveRepository.findOne({
@@ -65,7 +65,7 @@ export class DriveService {
       drive.cost = hours * drive.bike.hourlyPrice;
       drive.bike.isAvailable = true;
       await this.bikeRepository.save(drive.bike);
-      return await this.driveRepository.save(drive);
+      return this.driveRepository.save(drive);
     }
   }
 

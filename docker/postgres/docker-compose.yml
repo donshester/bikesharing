@@ -8,12 +8,28 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123456}
-      POSTGRES_DB: ${POSTGRES_DB:-postgres_db}
+      POSTGRES_DB: ${POSTGRES_DB:-bikesharing}
       PGDATA: ${PGDATA:-/data/postgres}
     volumes:
       - postgres:${PGDATA:-/data/postgres}
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "${DB_PORT:-5431}:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  test_postgres:
+    container_name: test_postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: ${TEST_POSTGRES_USER:-test_user}
+      POSTGRES_PASSWORD: ${TEST_POSTGRES_PASSWORD:-test123456}
+      POSTGRES_DB: ${TEST_POSTGRES_DB:-db_test}
+      PGDATA: ${TEST_PGDATA:-/data/test_postgres}
+    volumes:
+      - test_postgres:${TEST_PGDATA:-/data/test_postgres}
+    ports:
+      - "${TEST_DB_PORT:-5430}:5432"
     networks:
       - postgres
     restart: unless-stopped
@@ -32,6 +48,7 @@ services:
       - postgres
     restart: unless-stopped
 
+
 networks:
   postgres:
     driver: bridge
@@ -39,3 +56,4 @@ networks:
 volumes:
   postgres:
   pgadmin:
+  test_postgres:
