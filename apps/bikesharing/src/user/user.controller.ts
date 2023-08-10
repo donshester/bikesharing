@@ -3,14 +3,15 @@ import {
   Controller,
   Delete,
   Get,
-  Param, ParseUUIDPipe,
+  Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
   UseGuards,
   UsePipes,
-  ValidationPipe
-} from "@nestjs/common";
+  ValidationPipe,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
@@ -51,6 +52,7 @@ export class UserController {
   async findByQuery(@Query('query') query: string): Promise<UserEntity[]> {
     return await this.userService.findByQuery(query);
   }
+
   @Get('current/drives')
   @UseGuards(UserGuard)
   async getCurrentUserDrives(@User('id') id: string): Promise<DriveEntity[]> {

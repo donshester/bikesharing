@@ -6,9 +6,16 @@ import { UserModule } from './user/user.module';
 import { TypeormModule } from './typeorm/typeorm.module';
 import { DriveModule } from './drive/drive.module';
 import { AuthMiddleware } from './user/middleware/auth.middleware';
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
-  imports: [BikeModule, UserModule, TypeormModule, DriveModule],
+  imports: [
+    BikeModule,
+    UserModule,
+    TypeormModule,
+    DriveModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

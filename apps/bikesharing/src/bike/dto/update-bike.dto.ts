@@ -1,6 +1,11 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString, IsOptional } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsOptional,
+} from 'class-validator';
 import { BikeStatus } from '../bike.entity';
-
 
 export class UpdateBikeDto {
   @IsString()

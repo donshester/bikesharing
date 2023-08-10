@@ -4,9 +4,9 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ExpressRequest } from '../../../types/expressRequest.interface';
 import { Reflector } from '@nestjs/core';
 import { Roles } from '../types/roles.enum';
+import { ExpressRequest } from '../../../../../types/expressRequest.interface';
 
 @Injectable()
 export class UserGuard implements CanActivate {
@@ -17,7 +17,7 @@ export class UserGuard implements CanActivate {
       context.getHandler(),
     );
     const request = context.switchToHttp().getRequest<ExpressRequest>();
-``
+    ``;
     if (!requiredRole && request.user) {
       return true;
     }

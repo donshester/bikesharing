@@ -1,10 +1,9 @@
-import { ExpressRequest } from '../../../types/expressRequest.interface';
-import { CallHandler, ExecutionContext, Injectable, Logger, NestMiddleware } from "@nestjs/common";
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import { UserService } from '../user.service';
 import * as process from 'process';
-import { Observable } from "rxjs";
+import { ExpressRequest } from '../../../../../types/expressRequest.interface';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
