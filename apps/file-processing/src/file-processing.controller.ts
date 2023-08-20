@@ -22,8 +22,7 @@ export class FileProcessingController {
     private readonly fileProcessingService: FileProcessingService,
     private readonly rmqService: RmqService,
     @Inject('BIKES') private readonly bikesClient: ClientProxy,
-  ) {
-  }
+  ) {}
 
   @Post('upload')
   @UseInterceptors(

@@ -14,7 +14,7 @@ import { AuthMiddleware } from '../../src/user/middleware/auth.middleware';
 import { Roles } from '../../src/user/types/roles.enum';
 import { DriveEntity } from '../../src/drive/drive.entity';
 import { createMockDrives } from '../mocks/createMockDrives';
-import { BikeEntity, BikeStatus } from '../../src/bike/bike.entity';
+import { BikeEntity } from '../../src/bike/bike.entity';
 
 describe('UserController (E2E)', () => {
   let app: INestApplication;

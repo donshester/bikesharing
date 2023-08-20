@@ -15,7 +15,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/bikesharing/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/bikesharing/tsconfig.app.json"
+        "tsConfigPath": "apps/bikesharing/tsconfig.app.json",
+        "assets": ["libs/utils/protos/*.proto"],
+        "watchAssets": true
       }
     },
     "file-processing": {
@@ -34,6 +36,28 @@
       "sourceRoot": "libs/common/src",
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
+      }
+    },
+    "mail": {
+      "type": "application",
+      "root": "apps/mail",
+      "entryFile": "main",
+      "sourceRoot": "apps/mail/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/mail/tsconfig.app.json",
+        "assets": ["libs/utils/protos/*.proto"],
+        "watchAssets": true
+      }
+    },
+    "utils": {
+      "type": "library",
+      "root": "libs/utils",
+      "entryFile": "index",
+      "sourceRoot": "libs/utils/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/utils/tsconfig.lib.json",
+        "assets": ["libs/utils/protos/*.proto"],
+        "watchAssets": true
       }
     }
   }

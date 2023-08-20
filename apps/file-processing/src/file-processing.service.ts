@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { BikeCsvDto, BikeStatus } from "./dtos/bike-csv.dto";
-import { validate } from "class-validator";
+import { BikeCsvDto, BikeStatus } from './dtos/bike-csv.dto';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class FileProcessingService {
-  getHello(): string {
-    return 'Hello World!';
-  }
   async validateCsvRow(row: any): Promise<BikeCsvDto | null> {
     const dto = new BikeCsvDto();
     dto.modelName = row.modelName;

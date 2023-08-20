@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
-import { FindOneOptions, ILike, Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PasswordService } from './password.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,13 +16,13 @@ import { UserResponseInterface } from './types/userResponse.interface';
 import { LoginUserDto } from './dto/login-user.dto';
 import { DriveEntity } from '../drive/drive.entity';
 import { Roles } from './types/roles.enum';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-
     private readonly passwordService: PasswordService,
   ) {}
 
@@ -42,6 +42,7 @@ export class UserService {
       ...userDto,
       hashedPassword,
     });
+    user.activationToken = uuidv4();
     return await this.userRepository.save(user);
   }
 
@@ -156,5 +157,17 @@ export class UserService {
         query: `%${query}%`,
       })
       .getMany();
+  }
+
+  async activateAccount(token: string) {
+    const user = await this.userRepository.findOneBy({
+      activationToken: token,
+    });
+    if (!user) {
+      throw new NotFoundException('Token is incorrect');
+    }
+    user.isBlocked = false;
+    user.activationToken = null;
+    await this.userRepository.save(user);
   }
 }

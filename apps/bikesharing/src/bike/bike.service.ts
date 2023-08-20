@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BikeEntity, BikeStatus } from './bike.entity';
 import { CreateBikeDto } from './dto/create-bike.dto';
@@ -9,11 +9,7 @@ import { AuthService } from './auth.service';
 import { BikeUserResponse } from './types/bike-user-response.type';
 import { UpdateBikeDto } from './dto/update-bike.dto';
 import { ClientProxy } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
-import * as fs from "fs";
-import * as Papa from 'papaparse';
-import { ParseStepResult } from "papaparse";
-import { BikeCsvDto } from "../../../file-processing/src/dtos/bike-csv.dto";
+import { BikeCsvDto } from '../../../file-processing/src/dtos/bike-csv.dto';
 @Injectable()
 export class BikeService {
   constructor(
@@ -91,11 +87,7 @@ export class BikeService {
     return bike;
   }
 
-  async processCsv(file: Express.Multer.File){
-
-  }
-
-  async saveProcessedBikes(data: BikeCsvDto){
+  async saveProcessedBikes(data: BikeCsvDto) {
     return this.bikeRepository.save({ ...data, latitude: 50, longitude: 12 });
   }
 }

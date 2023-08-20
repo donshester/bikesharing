@@ -26,6 +26,13 @@ export class UserEntity {
   @Exclude()
   hashedPassword: string;
 
+  @Column({ type: 'boolean', default: true })
+  isBlocked: boolean;
+
+  @Column({ nullable: true })
+  @Exclude()
+  activationToken: string;
+
   @Column()
   firstName: string;
 

@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { RmqService } from '@app/common/rmq/rmq.service';
 
@@ -23,7 +23,9 @@ export class RmqModule {
               transport: Transport.RMQ,
               options: {
                 urls: [configService.get<string>('RABBIT_MQ_URI')],
-                queue: configService.get<string>(`RABBIT_MQ_BIKES_QUEUE`),
+                queue: configService.get<string>(
+                  `RABBIT_MQ_${options.name}_QUEUE`,
+                ),
                 queueOptions: {
                   durable: true,
                 },

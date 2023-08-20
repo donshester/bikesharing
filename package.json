@@ -26,6 +26,9 @@
     "typeorm:revert-migration": "npm run typeorm -- -d ./src/typeorm/typeorm.config.ts migration:revert"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.8.21",
+    "@grpc/proto-loader": "^0.7.8",
+    "@nestjs-modules/mailer": "^1.9.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
@@ -36,17 +39,21 @@
     "@nestjs/typeorm": "^9.0.1",
     "@types/papaparse": "^5.3.7",
     "amqp-connection-manager": "^4.1.14",
+    "ts-proto": "^1.156.2",
     "amqplib": "^0.10.3",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "csv-parser": "^3.0.0",
     "jsonwebtoken": "^9.0.0",
+    "nodemailer": "^6.9.4",
     "papaparse": "^5.4.1",
     "pg": "^8.10.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "ts-protoc-gen": "^0.15.0",
+    "uuid": "^9.0.0",
     "winston": "^3.10.0"
   },
   "devDependencies": {
@@ -95,7 +102,8 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
+      "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1"
     }
   }
 }

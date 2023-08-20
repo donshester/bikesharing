@@ -12,7 +12,6 @@ const options = (): DataSourceOptions => {
   if (!url) {
     throw new Error('Database url not found');
   }
-  console.log(url);
   return {
     url: url,
     type: 'postgres',
