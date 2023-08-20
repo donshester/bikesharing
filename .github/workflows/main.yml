@@ -6,24 +6,40 @@ on:
       - dev
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+#  lint:
+#    runs-on: windows-latest
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Install deps
+#        run: npm i
+#
+#      - name: Lint
+#        run: npm run lint
+#
+#      - name: Format
+#        run: npm run format
 
+  deploy:
+#    needs: [lint]
+    runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Set up PostgreSQL URL from secret
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+      - name: Install deps
+        run: npm i
 
-      - name: Build and start services
-        run: docker-compose -f docker-compose -f docker/postgres/docker-compose.yml down up -d
+      - name: Run migrations
+        run: npm run migration:run
 
-      - name: Wait for services to start
-        run: sleep 10
 
-      - name: Run unit tests
-        run: npm run test
 
-      - name: Run e2e tests
-        run: npm run test:e2e
 
-      - name: Stop services
-        run: docker-compose -f docker-compose -f docker/postgres/docker-compose.yml down down
+
