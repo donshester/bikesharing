@@ -1,0 +1,29 @@
+name: CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build and start services
+        run: docker-compose -f docker-compose -f docker/postgres/docker-compose.yml down up -d
+
+      - name: Wait for services to start
+        run: sleep 10
+
+      - name: Run unit tests
+        run: npm run test
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+
+      - name: Stop services
+        run: docker-compose -f docker-compose -f docker/postgres/docker-compose.yml down down
