@@ -8,15 +8,13 @@ import { BikeResponse } from './types/bike-response.type';
 import { AuthService } from './auth.service';
 import { BikeUserResponse } from './types/bike-user-response.type';
 import { UpdateBikeDto } from './dto/update-bike.dto';
-import { ClientProxy } from '@nestjs/microservices';
-import { BikeCsvDto } from '../../../file-processing/src/dtos/bike-csv.dto';
+
 @Injectable()
 export class BikeService {
   constructor(
     @InjectRepository(BikeEntity)
     private readonly bikeRepository: Repository<BikeEntity>,
     private readonly authService: AuthService,
-    @Inject('BIKES') private readonly processingClient: ClientProxy,
   ) {}
 
   async createBike(createBikeDto: CreateBikeDto): Promise<BikeResponse> {
@@ -87,7 +85,7 @@ export class BikeService {
     return bike;
   }
 
-  async saveProcessedBikes(data: BikeCsvDto) {
+  async saveProcessedBikes(data) {
     return this.bikeRepository.save({ ...data, latitude: 50, longitude: 12 });
   }
 }
