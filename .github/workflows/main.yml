@@ -1,0 +1,44 @@
+name: CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  lint:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install deps
+        run: npm i
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format
+        run: npm run format
+
+  deploy:
+    needs: [lint]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Set up PostgreSQL URL from secret
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+      - name: Install deps
+        run: npm i
+
+      - name: Run migrations
+        run: npm run migration:run
+
+
+

@@ -1,6 +1,6 @@
-import {UserEntity} from "../src/user/user.entity";
-import {Request} from 'express'
+import { Request } from 'express';
+import { UserEntity } from '../apps/bikesharing/src/user/user.entity';
 
 export interface ExpressRequest extends Request {
-  user?: UserEntity
+  user?: UserEntity;
 }
